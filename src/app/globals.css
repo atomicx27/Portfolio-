@@ -1,26 +1,305 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================
+   THEME SYSTEM — CSS Custom Properties
+   ============================================ */
+
+/* Default: Cyberpunk Neon */
+:root,
+[data-theme="cyberpunk"] {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111119;
+  --bg-card: rgba(20, 20, 35, 0.8);
+  --bg-card-solid: #141423;
+  --text-primary: #e8e8f0;
+  --text-secondary: #a0a0b8;
+  --text-muted: #6b6b82;
+  --accent-primary: #00f0ff;
+  --accent-secondary: #ff2d95;
+  --accent-tertiary: #b026ff;
+  --border-color: rgba(0, 240, 255, 0.15);
+  --glow-color: rgba(0, 240, 255, 0.4);
+  --gradient-accent: linear-gradient(135deg, #00f0ff, #ff2d95, #b026ff);
+  --shadow-glow: 0 0 20px rgba(0, 240, 255, 0.15);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark-minimal"] {
+  --bg-primary: #111111;
+  --bg-secondary: #1a1a1a;
+  --bg-card: rgba(30, 30, 30, 0.8);
+  --bg-card-solid: #1e1e1e;
+  --text-primary: #f0ece4;
+  --text-secondary: #b8b0a0;
+  --text-muted: #7a7468;
+  --accent-primary: #FF6B6B;
+  --accent-secondary: #FFD43B;
+  --accent-tertiary: #4CAF50;
+  --border-color: rgba(255, 107, 107, 0.12);
+  --glow-color: rgba(255, 107, 107, 0.3);
+  --gradient-accent: linear-gradient(135deg, #FF6B6B, #FFD43B, #4CAF50);
+  --shadow-glow: 0 0 20px rgba(255, 107, 107, 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme="light-airy"] {
+  --bg-primary: #FAFAFA;
+  --bg-secondary: #f0f0f5;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-solid: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8888a0;
+  --accent-primary: #667eea;
+  --accent-secondary: #764ba2;
+  --accent-tertiary: #f093fb;
+  --border-color: rgba(102, 126, 234, 0.15);
+  --glow-color: rgba(102, 126, 234, 0.25);
+  --gradient-accent: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  --shadow-glow: 0 4px 20px rgba(102, 126, 234, 0.12);
+}
+
+[data-theme="glassmorphism"] {
+  --bg-primary: #0f0c29;
+  --bg-secondary: #1a1640;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-solid: #1e1a45;
+  --text-primary: #e8e4f0;
+  --text-secondary: #a8a0c0;
+  --text-muted: #6b6585;
+  --accent-primary: #60a5fa;
+  --accent-secondary: #a78bfa;
+  --accent-tertiary: #34d399;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glow-color: rgba(96, 165, 250, 0.3);
+  --gradient-accent: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+  --shadow-glow: 0 0 30px rgba(96, 165, 250, 0.1);
+}
+
+/* ============================================
+   GLASSMORPHISM BACKGROUND 
+   ============================================ */
+[data-theme="glassmorphism"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(96, 165, 250, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(167, 139, 250, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  z-index: -1;
+}
+
+/* ============================================
+   THEME UTILITY CLASSES
+   ============================================ */
+.theme-bg { background-color: var(--bg-primary); }
+.theme-bg-secondary { background-color: var(--bg-secondary); }
+.theme-bg-card { background-color: var(--bg-card-solid); }
+.theme-card-bg { 
+  background: var(--bg-card); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.theme-text { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-muted { color: var(--text-muted); }
+.theme-accent-text { color: var(--accent-primary); }
+.theme-accent-bg { background: var(--gradient-accent); }
+.theme-border { border-color: var(--border-color); }
+.theme-active-bg { background: rgba(var(--accent-primary), 0.1); }
+
+/* Fix for theme-active-bg since CSS vars aren't RGB values */
+[data-theme="cyberpunk"] .theme-active-bg { background: rgba(0, 240, 255, 0.08); }
+[data-theme="dark-minimal"] .theme-active-bg { background: rgba(255, 107, 107, 0.08); }
+[data-theme="light-airy"] .theme-active-bg { background: rgba(102, 126, 234, 0.08); }
+[data-theme="glassmorphism"] .theme-active-bg { background: rgba(96, 165, 250, 0.08); }
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.5s ease, color 0.3s ease;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 var(--glow-color);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 15px transparent;
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes border-dance {
+  0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  25% { border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%; }
+  50% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+  75% { border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%; }
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-border-dance {
+  animation: border-dance 8s ease-in-out infinite;
+}
+
+/* ============================================
+   SECTION STYLING
+   ============================================ */
+.section-title {
+  position: relative;
+  display: inline-block;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: var(--gradient-accent);
+  border-radius: 2px;
+}
+
+/* ============================================
+   GLOW EFFECTS
+   ============================================ */
+.glow-card {
+  transition: all 0.3s ease;
+}
+
+.glow-card:hover {
+  box-shadow: var(--shadow-glow);
+  border-color: var(--accent-primary);
+}
+
+/* ============================================
+   LINE CLAMP
+   ============================================ */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   SPECIAL EFFECTS
+   ============================================ */
+.gradient-text {
+  background: var(--gradient-accent);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 4s ease infinite;
+}
+
+/* Scanline overlay for cyberpunk */
+[data-theme="cyberpunk"] .scanline-overlay::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.01) 2px,
+    rgba(0, 240, 255, 0.01) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
 }

@@ -1,0 +1,69 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme, themeConfig, type ThemeName } from '@/context/ThemeContext';
+import { Palette } from 'lucide-react';
+
+export default function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const themes = Object.entries(themeConfig) as [ThemeName, (typeof themeConfig)[ThemeName]][];
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ type: 'spring' as const, stiffness: 300, damping: 25 }}
+            className="absolute bottom-16 right-0 p-3 rounded-2xl theme-card-bg backdrop-blur-xl border theme-border shadow-2xl min-w-[200px]"
+          >
+            <p className="text-xs uppercase tracking-widest theme-text-muted mb-3 font-semibold">
+              Theme
+            </p>
+            <div className="flex flex-col gap-2">
+              {themes.map(([key, config]) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setTheme(key);
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group ${
+                    theme === key
+                      ? 'theme-active-bg'
+                      : 'hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex gap-1">
+                    {config.colors.map((color, i) => (
+                      <div
+                        key={i}
+                        className="w-3 h-3 rounded-full transition-transform group-hover:scale-110"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm theme-text font-medium">{config.label}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        whileHover={{ scale: 1.1, rotate: 15 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-14 h-14 rounded-full theme-accent-bg flex items-center justify-center shadow-lg shadow-[var(--accent-primary)]/30 transition-shadow hover:shadow-xl hover:shadow-[var(--accent-primary)]/50"
+      >
+        <Palette className="w-6 h-6 text-white" />
+      </motion.button>
+    </div>
+  );
+}
