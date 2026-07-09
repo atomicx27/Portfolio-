@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useMemo, useEffect } from 'react';
+import { Suspense, useMemo, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -18,11 +18,18 @@ interface BrainSceneProps {
 }
 
 /**
- * Handles smooth camera transition (zoom and target centering) 
- * when a node in the neural network is clicked or cleared.
+ * Handles smooth camera transitions (zoom and target centering) 
+ * only when a node is clicked or cleared. Allows full user orbital 
+ * controls (pan/zoom/rotate) once the transition is complete.
  */
 function CameraController({ activeNodeId }: { activeNodeId: string | null }) {
   const { camera, controls } = useThree();
+  const isTransitioning = useRef(false);
+
+  // Trigger camera transition when activeNodeId changes
+  useEffect(() => {
+    isTransitioning.current = true;
+  }, [activeNodeId]);
 
   // Position map matching the scaled positions in NeuralGraph
   const positionMap = useMemo(() => {
@@ -37,41 +44,62 @@ function CameraController({ activeNodeId }: { activeNodeId: string | null }) {
     return map;
   }, []);
 
-  const targetLookAt = useMemo(() => new THREE.Vector3(0, 0, 0), []);
+  const defaultTarget = useMemo(() => new THREE.Vector3(0, 0, 0), []);
   const defaultCameraPos = useMemo(() => new THREE.Vector3(0, 1, 5.5), []);
 
   useFrame((_, delta) => {
     const orbit = controls as any;
     if (!orbit) return;
 
-    if (activeNodeId && positionMap[activeNodeId]) {
-      const nodePos = positionMap[activeNodeId];
-      
-      // Interpolate the controls target to the node position
-      targetLookAt.lerp(nodePos, delta * 4);
-      orbit.target.copy(targetLookAt);
+    if (isTransitioning.current) {
+      let targetDestination = defaultTarget;
+      let cameraDestination = defaultCameraPos;
+      let lerpSpeed = 4;
 
-      // Interpolate camera position to be close to the node with an offset
-      const cameraOffset = new THREE.Vector3(0.4, 0.4, 1.4);
-      const targetCamPos = nodePos.clone().add(cameraOffset);
-      camera.position.lerp(targetCamPos, delta * 4);
+      if (activeNodeId && positionMap[activeNodeId]) {
+        const nodePos = positionMap[activeNodeId];
+        targetDestination = nodePos;
+        
+        const cameraOffset = new THREE.Vector3(0.4, 0.4, 1.4);
+        cameraDestination = nodePos.clone().add(cameraOffset);
+        lerpSpeed = 5; // Slightly faster focus transition
+      }
 
-      // Disable autoRotate when viewing a specific node
+      // Smoothly interpolate camera target and position
+      orbit.target.lerp(targetDestination, delta * lerpSpeed);
+      camera.position.lerp(cameraDestination, delta * lerpSpeed);
+
+      // Disable autoRotate during transition
       orbit.autoRotate = false;
+
+      // Check if camera has reached the destination
+      const targetClose = orbit.target.distanceTo(targetDestination) < 0.02;
+      const cameraClose = camera.position.distanceTo(cameraDestination) < 0.02;
+
+      if (targetClose && cameraClose) {
+        // Snap to exact coordinates and stop transition loop
+        orbit.target.copy(targetDestination);
+        camera.position.copy(cameraDestination);
+        isTransitioning.current = false;
+        
+        // Re-enable auto-rotation ONLY when we are back at the center overview
+        if (!activeNodeId) {
+          orbit.autoRotate = true;
+          orbit.autoRotateSpeed = 0.4;
+        }
+      }
+      
+      orbit.update();
     } else {
-      // Interpolate controls target back to original center
-      targetLookAt.lerp(new THREE.Vector3(0, 0, 0), delta * 3);
-      orbit.target.copy(targetLookAt);
-
-      // Interpolate camera back to original overview position
-      camera.position.lerp(defaultCameraPos, delta * 3);
-
-      // Re-enable slow auto-rotation for the idle brain view
-      orbit.autoRotate = true;
-      orbit.autoRotateSpeed = 0.4;
+      // Transition is complete. Ensure autoRotate settings are correct
+      // but do not overwrite target or camera position, enabling full user control.
+      if (activeNodeId) {
+        orbit.autoRotate = false;
+      } else {
+        orbit.autoRotate = true;
+        orbit.autoRotateSpeed = 0.4;
+      }
     }
-
-    orbit.update();
   });
 
   return null;
