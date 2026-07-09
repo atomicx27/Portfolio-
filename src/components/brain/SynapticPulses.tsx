@@ -30,9 +30,9 @@ export default function SynapticPulses({ accentColor, highlightedIds }: Synaptic
     const posMap: Record<string, THREE.Vector3> = {};
     for (const node of brainNodes) {
       posMap[node.id] = new THREE.Vector3(
-        node.position[0] * 2.0,
-        node.position[1] * 1.5,
-        node.position[2] * 1.7
+        node.position[0] * 1.8,
+        node.position[1] * 1.4,
+        node.position[2] * 1.6
       );
     }
 

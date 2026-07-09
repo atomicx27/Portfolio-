@@ -16,7 +16,7 @@ interface NeuralGraphProps {
 
 /**
  * Renders all brain nodes as glowing spheres and their connections as lines.
- * Handles raycasting for hover and click interactions.
+ * Connection lines dynamically light up and grow thicker when hovered or active.
  */
 export default function NeuralGraph({
   accentColor,
@@ -28,14 +28,14 @@ export default function NeuralGraph({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const groupRef = useRef<THREE.Group>(null!);
 
-  // Pre-compute node position map
+  // Pre-compute node position map (scaled to fit brain hemispheres better)
   const positionMap = useMemo(() => {
     const map: Record<string, THREE.Vector3> = {};
     for (const node of brainNodes) {
       map[node.id] = new THREE.Vector3(
-        node.position[0] * 2.0,
-        node.position[1] * 1.5,
-        node.position[2] * 1.7
+        node.position[0] * 1.8,
+        node.position[1] * 1.4,
+        node.position[2] * 1.6
       );
     }
     return map;
@@ -63,9 +63,14 @@ export default function NeuralGraph({
   }, [highlightedIds]);
 
   const getLineOpacity = useCallback((fromId: string, toId: string) => {
-    if (!highlightedIds) return 0.25;
-    return highlightedIds.has(fromId) && highlightedIds.has(toId) ? 0.4 : 0.04;
+    if (!highlightedIds) return 0.22;
+    return highlightedIds.has(fromId) && highlightedIds.has(toId) ? 0.35 : 0.04;
   }, [highlightedIds]);
+
+  // Determine if a connection is active (either side hovered or clicked)
+  const isLineActive = useCallback((fromId: string, toId: string) => {
+    return hoveredId === fromId || hoveredId === toId || activeNodeId === fromId || activeNodeId === toId;
+  }, [hoveredId, activeNodeId]);
 
   return (
     <group ref={groupRef}>
@@ -74,13 +79,29 @@ export default function NeuralGraph({
         const from = positionMap[fromId];
         const to = positionMap[toId];
         if (!from || !to) return null;
-        const opacity = getLineOpacity(fromId, toId);
+
+        const isActive = isLineActive(fromId, toId);
+        
+        // Calculate appropriate opacity and color
+        let opacity = getLineOpacity(fromId, toId);
+        let lineColor = accentColor;
+        let lineWidth = 1.0;
+
+        if (isActive) {
+          opacity = 0.85;
+          lineColor = secondaryColor;
+          lineWidth = 3.5;
+        } else if (hoveredId || activeNodeId) {
+          // Dim other connections when one node is focused
+          opacity = 0.03;
+        }
+
         return (
           <Line
             key={`${fromId}--${toId}`}
             points={[from, to]}
-            color={accentColor}
-            lineWidth={1}
+            color={lineColor}
+            lineWidth={lineWidth}
             transparent
             opacity={opacity}
           />
@@ -93,9 +114,10 @@ export default function NeuralGraph({
         const isHovered = hoveredId === node.id;
         const isActive = activeNodeId === node.id;
         const opacity = getNodeOpacity(node.id);
-        const baseSize = node.size * 0.08;
-        const scale = isHovered || isActive ? 1.4 : 1;
+        const baseSize = node.size * 0.075;
+        const scale = isHovered || isActive ? 1.45 : 1;
 
+        // Visual coloring according to category
         const nodeColor = node.type === 'interest'
           ? secondaryColor
           : node.type === 'skill'
@@ -104,17 +126,17 @@ export default function NeuralGraph({
 
         return (
           <group key={node.id} position={pos}>
-            {/* Glow sphere (larger, translucent) */}
-            <Sphere args={[baseSize * 2.5, 8, 8]}>
+            {/* Outer halo / glow pulse */}
+            <Sphere args={[baseSize * 2.3, 8, 8]}>
               <meshBasicMaterial
                 color={nodeColor}
                 transparent
-                opacity={opacity * 0.08 * (isHovered || isActive ? 2 : 1)}
+                opacity={opacity * 0.07 * (isHovered || isActive ? 2.5 : 1)}
                 depthWrite={false}
               />
             </Sphere>
 
-            {/* Main node sphere */}
+            {/* Inner solid sphere with rim highlight */}
             <Sphere
               args={[baseSize * scale, 16, 16]}
               onPointerEnter={(e: ThreeEvent<PointerEvent>) => {
@@ -134,15 +156,15 @@ export default function NeuralGraph({
               <meshStandardMaterial
                 color={nodeColor}
                 emissive={nodeColor}
-                emissiveIntensity={isHovered || isActive ? 1.5 : 0.6}
+                emissiveIntensity={isHovered || isActive ? 2.0 : 0.65}
                 transparent
                 opacity={opacity}
-                roughness={0.3}
-                metalness={0.5}
+                roughness={0.2}
+                metalness={0.6}
               />
             </Sphere>
 
-            {/* Label — show on hover */}
+            {/* Float Label — visible on hover */}
             {isHovered && opacity > 0.5 && (
               <Html
                 center
@@ -154,17 +176,13 @@ export default function NeuralGraph({
                 }}
               >
                 <div
+                  className="px-3 py-1.5 rounded-lg text-white text-[11px] font-semibold border backdrop-blur-md transition-all duration-300"
                   style={{
-                    background: 'rgba(0,0,0,0.75)',
-                    color: '#fff',
-                    padding: '4px 10px',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    fontWeight: 600,
+                    background: 'rgba(10, 10, 15, 0.85)',
                     fontFamily: 'Inter, system-ui, sans-serif',
-                    backdropFilter: 'blur(8px)',
-                    border: `1px solid ${accentColor}40`,
-                    transform: 'translateY(-24px)',
+                    borderColor: `${nodeColor}40`,
+                    boxShadow: `0 4px 20px ${nodeColor}25`,
+                    transform: 'translateY(-26px)',
                   }}
                 >
                   {node.icon} {node.label}
