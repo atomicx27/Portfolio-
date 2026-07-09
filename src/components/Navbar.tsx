@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 import { navLinks } from '@/lib/constants';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,9 +19,11 @@ export default function Navbar() {
     };
 
     const handleSectionObserver = () => {
-      const sections = navLinks.map((link) =>
-        document.querySelector(link.href)
-      );
+      if (pathname === '/brain') return () => {};
+
+      const sections = navLinks
+        .filter((link) => link.href.startsWith('#'))
+        .map((link) => document.querySelector(link.href));
 
       const observer = new IntersectionObserver(
         (entries) => {
@@ -45,13 +50,29 @@ export default function Navbar() {
       window.removeEventListener('scroll', handleScroll);
       cleanup?.();
     };
-  }, []);
+  }, [pathname]);
 
-  const scrollToSection = (href: string) => {
+  const handleNavClick = (href: string) => {
     setIsMobileOpen(false);
-    const el = document.querySelector(href);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    if (href.startsWith('#')) {
+      if (pathname === '/brain') {
+        router.push(`/${href}`);
+      } else {
+        const el = document.querySelector(href);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      router.push(href);
+    }
+  };
+
+  const handleLogoClick = () => {
+    if (pathname === '/brain') {
+      router.push('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -69,7 +90,7 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <motion.button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={handleLogoClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="text-xl font-bold theme-accent-text tracking-tight"
@@ -82,7 +103,7 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <motion.button
                 key={link.href}
-                onClick={() => scrollToSection(link.href)}
+                onClick={() => handleNavClick(link.href)}
                 whileHover={{ y: -2 }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                   activeSection === link.href
@@ -135,7 +156,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08 }}
-                  onClick={() => scrollToSection(link.href)}
+                  onClick={() => handleNavClick(link.href)}
                   className={`text-lg font-medium text-left py-2 transition-colors ${
                     activeSection === link.href
                       ? 'theme-accent-text'
