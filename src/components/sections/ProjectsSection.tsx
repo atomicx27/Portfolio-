@@ -11,29 +11,29 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.07,
-      delayChildren: 0.1,
+      staggerChildren: 0.05,
+      delayChildren: 0.05,
     },
   },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  hidden: { opacity: 0, y: 30, scale: 0.96 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
       type: 'spring' as const,
-      stiffness: 260,
-      damping: 24,
+      stiffness: 240,
+      damping: 22,
     },
   },
   exit: {
     opacity: 0,
-    y: 20,
-    scale: 0.92,
-    transition: { duration: 0.25, ease: 'easeInOut' as const },
+    y: 15,
+    scale: 0.95,
+    transition: { duration: 0.2, ease: 'easeInOut' as const },
   },
 };
 
@@ -52,135 +52,123 @@ function ProjectCard({ project }: { project: (typeof projects)[number] }) {
     <motion.div
       layout
       variants={cardVariants}
-      whileHover={{ y: -8 }}
-      className="group relative flex flex-col rounded-2xl border p-6 overflow-hidden transition-all duration-300 hover:shadow-xl"
-      style={{
-        backgroundColor: 'var(--bg-card)',
-        borderColor: 'var(--border-color)',
+      whileHover={{ 
+        y: -6,
+        borderColor: 'var(--accent-primary)',
+        boxShadow: 'var(--shadow-glow)'
       }}
-      // Glow shadow on hover via inline + group
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.boxShadow =
-          '0 8px 40px -8px var(--glow-color)';
-        (e.currentTarget as HTMLElement).style.borderColor =
-          'var(--accent-primary)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-        (e.currentTarget as HTMLElement).style.borderColor =
-          'var(--border-color)';
-      }}
+      className={`group relative flex flex-col rounded-2xl border p-6 overflow-hidden transition-all duration-300 theme-card-bg theme-border ${
+        project.featured 
+          ? 'md:col-span-2 lg:col-span-2 min-h-[340px] md:justify-between' 
+          : 'col-span-1 min-h-[300px]'
+      }`}
     >
-      {/* ── Top Row: Icon + Category + Featured ── */}
-      <div className="flex items-start justify-between mb-4">
-        <span className="text-3xl leading-none select-none">{project.icon}</span>
+      {/* Glow Backdrop */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-[var(--accent-primary)]/5 to-[var(--accent-secondary)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
 
-        <div className="flex items-center gap-2">
-          {project.featured && (
-            <motion.div
-              initial={{ rotate: -15, scale: 0 }}
-              animate={{ rotate: 0, scale: 1 }}
-              transition={{ type: 'spring' as const, stiffness: 400, damping: 12, delay: 0.3 }}
-              className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+      <div>
+        {/* ── Top Row: Icon + Category + Featured ── */}
+        <div className="flex items-start justify-between mb-5">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] group-hover:border-[var(--accent-primary)]/50 transition-colors duration-300">
+            <span className="text-2xl leading-none select-none">{project.icon}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {project.featured && (
+              <motion.div
+                initial={{ rotate: -10, scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{ type: 'spring' as const, stiffness: 450, damping: 14, delay: 0.2 }}
+                className="flex items-center gap-1 rounded-full bg-[var(--accent-secondary)] px-2.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-white shadow-sm font-mono"
+              >
+                <Star className="w-2.5 h-2.5 fill-current" />
+                Featured
+              </motion.div>
+            )}
+            <span
+              className="rounded-full px-2.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider font-mono"
               style={{
-                backgroundColor: 'var(--accent-secondary)',
-                color: '#fff',
+                backgroundColor: 'color-mix(in srgb, var(--accent-primary) 15%, transparent)',
+                color: 'var(--accent-primary)',
               }}
             >
-              <Star className="w-3 h-3 fill-current" />
-              Featured
-            </motion.div>
-          )}
-          <span
-            className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-            style={{
-              backgroundColor: 'color-mix(in srgb, var(--accent-primary) 15%, transparent)',
-              color: 'var(--accent-primary)',
-            }}
-          >
-            {project.category}
-          </span>
+              {project.category}
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* ── Title ── */}
-      <h3
-        className="text-xl font-bold mb-2 transition-colors duration-300 group-hover:text-[var(--accent-primary)]"
-        style={{ color: 'var(--text-primary)' }}
-      >
-        {project.title}
-      </h3>
-
-      {/* ── Description ── */}
-      <p
-        className="text-sm leading-relaxed line-clamp-3 mb-4 flex-1"
-        style={{ color: 'var(--text-secondary)' }}
-      >
-        {project.description}
-      </p>
-
-      {/* ── Tech Stack Badges ── */}
-      <div className="flex flex-wrap gap-1.5 mb-5">
-        {project.techStack.map((tech) => (
-          <span
-            key={tech}
-            className="inline-block rounded-full px-2.5 py-1 text-xs font-medium transition-colors duration-200"
-            style={{
-              backgroundColor: 'color-mix(in srgb, var(--accent-primary) 10%, transparent)',
-              color: 'var(--accent-primary)',
-            }}
-          >
-            {tech}
-          </span>
-        ))}
-      </div>
-
-      {/* ── Footer: GitHub Link ── */}
-      <div className="flex items-center gap-2 mt-auto pt-3 border-t" style={{ borderColor: 'var(--border-color)' }}>
-        <a
-          href={project.githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-300 hover:scale-105"
-          style={{
-            backgroundColor: 'color-mix(in srgb, var(--accent-primary) 12%, transparent)',
-            color: 'var(--accent-primary)',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--accent-primary)';
-            (e.currentTarget as HTMLElement).style.color = '#fff';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor =
-              'color-mix(in srgb, var(--accent-primary) 12%, transparent)';
-            (e.currentTarget as HTMLElement).style.color = 'var(--accent-primary)';
-          }}
-          onClick={(e) => e.stopPropagation()}
+        {/* ── Title ── */}
+        <h3
+          className="text-xl font-bold mb-2.5 transition-colors duration-300 group-hover:text-[var(--accent-primary)]"
+          style={{ color: 'var(--text-primary)' }}
         >
-          <Github className="w-4 h-4" />
-          Source Code
-          <ExternalLink className="w-3.5 h-3.5 opacity-70" />
-        </a>
+          {project.title}
+        </h3>
 
-        {project.liveUrl && (
+        {/* ── Description ── */}
+        <p
+          className={`text-sm leading-relaxed mb-5 ${project.featured ? 'line-clamp-4' : 'line-clamp-3'}`}
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          {project.description}
+        </p>
+      </div>
+
+      <div>
+        {/* ── Tech Stack Badges ── */}
+        <div className="flex flex-wrap gap-1.5 mb-6">
+          {project.techStack.map((tech) => (
+            <span
+              key={tech}
+              className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold font-mono transition-colors duration-200"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--accent-primary) 10%, transparent)',
+                color: 'var(--accent-primary)',
+              }}
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        {/* ── Footer Actions ── */}
+        <div className="flex items-center gap-2 pt-4 border-t border-[var(--border-color)]">
           <a
-            href={project.liveUrl}
+            href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-300 hover:scale-105"
+            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold font-mono transition-all duration-300 hover:scale-105"
             style={{
-              backgroundColor: 'var(--accent-primary)',
-              color: '#fff',
+              backgroundColor: 'color-mix(in srgb, var(--accent-primary) 12%, transparent)',
+              color: 'var(--accent-primary)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <ExternalLink className="w-4 h-4" />
-            Live Demo
+            <Github className="w-3.5 h-3.5" />
+            Source Code
+            <ExternalLink className="w-3 h-3 opacity-60" />
           </a>
-        )}
+
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold font-mono transition-all duration-300 hover:scale-105"
+              style={{
+                backgroundColor: 'var(--accent-primary)',
+                color: '#fff',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Live Demo
+            </a>
+          )}
+        </div>
       </div>
 
-      {/* ── Decorative gradient blob (behind card content) ── */}
+      {/* ── Decorative gradient blob ── */}
       <div
         className="pointer-events-none absolute -bottom-16 -right-16 h-40 w-40 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-20"
         style={{ backgroundColor: 'var(--accent-primary)' }}
@@ -202,8 +190,7 @@ export default function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="relative w-full py-24 sm:py-32 overflow-hidden"
-      style={{ backgroundColor: 'var(--bg-primary)' }}
+      className="relative w-full py-24 sm:py-32 overflow-hidden bg-[var(--bg-primary)]"
     >
       {/* Ambient glow */}
       <div
@@ -221,18 +208,21 @@ export default function ProjectsSection() {
           className="text-center mb-14"
         >
           <h2
-            className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4"
             style={{ color: 'var(--text-primary)' }}
           >
             Projects
           </h2>
           <div
-            className="mx-auto h-1 w-20 rounded-full mb-6"
-            style={{ backgroundColor: 'var(--accent-primary)' }}
+            className="mx-auto h-1.5 w-24 rounded-full mb-6"
+            style={{
+              background:
+                'linear-gradient(90deg, var(--accent-primary), var(--accent-secondary))',
+            }}
           />
           <p
             className="max-w-2xl mx-auto text-base sm:text-lg leading-relaxed"
-            style={{ color: 'var(--text-muted)' }}
+            style={{ color: 'var(--text-secondary)' }}
           >
             A curated showcase of things I&apos;ve built — from production platforms to wild AI experiments.
           </p>
@@ -246,32 +236,28 @@ export default function ProjectsSection() {
           transition={{ duration: 0.5, delay: 0.15 }}
           className="mb-12 flex justify-center"
         >
-          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar max-w-full px-1">
+          <div className="flex gap-2.5 overflow-x-auto pb-2 no-scrollbar max-w-full px-1">
             {projectCategories.map((category) => {
               const isActive = activeCategory === category;
               return (
-                <motion.button
+                <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="relative flex-shrink-0 rounded-full px-5 py-2 text-sm font-semibold transition-colors duration-300 border"
-                  style={{
-                    backgroundColor: isActive ? 'var(--accent-primary)' : 'transparent',
-                    color: isActive ? '#fff' : 'var(--text-secondary)',
-                    borderColor: isActive ? 'var(--accent-primary)' : 'var(--border-color)',
-                  }}
+                  className={`relative flex-shrink-0 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300 border font-mono select-none outline-none ${
+                    isActive 
+                      ? 'border-[var(--accent-primary)] text-white' 
+                      : 'border-[var(--border-color)] text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/50'
+                  }`}
                 >
-                  {category}
+                  <span className="relative z-10">{category}</span>
                   {isActive && (
                     <motion.div
                       layoutId="activeCategoryPill"
-                      className="absolute inset-0 rounded-full -z-10"
-                      style={{ backgroundColor: 'var(--accent-primary)' }}
-                      transition={{ type: 'spring' as const, stiffness: 400, damping: 30 }}
+                      className="absolute inset-0 rounded-full bg-[var(--accent-primary)]"
+                      transition={{ type: 'spring' as const, stiffness: 350, damping: 25 }}
                     />
                   )}
-                </motion.button>
+                </button>
               );
             })}
           </div>
@@ -282,7 +268,7 @@ export default function ProjectsSection() {
           key={activeCategory}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center text-sm font-medium mb-8"
+          className="text-center text-sm font-mono font-medium mb-8"
           style={{ color: 'var(--text-muted)' }}
         >
           Showing{' '}
@@ -301,7 +287,7 @@ export default function ProjectsSection() {
           )}
         </motion.p>
 
-        {/* ── Project Grid ── */}
+        {/* ── Project Bento Grid ── */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}

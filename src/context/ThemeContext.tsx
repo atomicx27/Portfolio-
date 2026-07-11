@@ -40,11 +40,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const saved = localStorage.getItem('portfolio-theme') as ThemeName | null;
-    if (saved && Object.keys(themeConfig).includes(saved)) {
-      setTheme(saved);
-    }
+    // Defer setting state to next macrotask tick to prevent cascading render warning
+    const timer = setTimeout(() => {
+      if (saved && Object.keys(themeConfig).includes(saved)) {
+        setTheme(saved);
+      }
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

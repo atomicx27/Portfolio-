@@ -4,10 +4,6 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-interface HemisphereProps {
-  isRight: boolean;
-  accentColor: string;
-}
 
 /**
  * Generates a single hemisphere geometry with organic brain folds.

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useMemo, useState, useCallback } from 'react';
-import { useFrame, useThree, ThreeEvent } from '@react-three/fiber';
+import { ThreeEvent } from '@react-three/fiber';
 import { Line, Html, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 import { brainNodes, type BrainNode } from '@/data/brainNodes';

@@ -59,7 +59,36 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="cyberpunk" suppressHydrationWarning>
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        {/* Skip to main content link for keyboard navigation / a11y */}
+        <a 
+          href="#about" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-5 focus:py-2.5 focus:bg-[var(--accent-primary)] focus:text-black focus:font-black focus:rounded-xl focus:shadow-lg outline-none"
+        >
+          Skip to main content
+        </a>
+        
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+
+        {/* Structured Data / JSON-LD for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "name": "Pashin Kasad",
+              "url": "https://pashinkasad.dev",
+              "jobTitle": "AI Solutions Developer & Full Stack Engineer",
+              "sameAs": [
+                "https://github.com/atomicx27",
+                "https://www.linkedin.com/in/pashin-kasad-1a698a24a/"
+              ],
+              "description": "BTech graduate building full-stack and AI-driven solutions. Specializing in AI implementation, web development, and data analytics."
+            })
+          }}
+        />
       </body>
     </html>
   );

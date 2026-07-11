@@ -25,26 +25,29 @@ function AnimatedCounter({
   useEffect(() => {
     if (!isInView) return;
 
-    const duration = 2000; // 2 seconds
-    const steps = 60;
-    const increment = target / steps;
-    let current = 0;
+    let startTime: number | null = null;
+    const duration = 1800; // 1.8 seconds count up
+    let animationFrameId: number;
 
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      
+      setCount(Math.floor(percentage * target));
+
+      if (percentage < 1) {
+        animationFrameId = requestAnimationFrame(animate);
       }
-    }, duration / steps);
+    };
 
-    return () => clearInterval(timer);
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isInView, target]);
 
   return (
-    <span ref={ref}>
+    <span ref={ref} className="font-mono">
       {formatNumber(count)}
       {suffix}
     </span>
@@ -54,7 +57,7 @@ function AnimatedCounter({
 const container = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.1, delayChildren: 0.05 },
+    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
   },
 };
 
@@ -65,26 +68,43 @@ const item = {
 
 export default function FunFactsSection() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <section id="funfacts" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-[var(--bg-primary)] overflow-hidden">
+      {/* CSS Floating Accent Particles */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+        <div 
+          className="absolute w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)] top-[30%] left-[85%] blur-[1.5px] animate-[float_4.5s_ease-in-out_infinite]"
+          style={{ animationDelay: '0.5s' }}
+        />
+        <div 
+          className="absolute w-2 h-2 rounded-full bg-[var(--accent-secondary)] top-[75%] left-[20%] blur-[1px] animate-[float_3.5s_ease-in-out_infinite]"
+          style={{ animationDelay: '1.8s' }}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Stats Counters */}
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
         >
           {stats.map((stat, i) => (
             <motion.div
               key={i}
               variants={item}
-              className="theme-card-bg rounded-2xl p-6 border theme-border text-center"
+              whileHover={{ 
+                y: -5,
+                borderColor: 'var(--accent-primary)',
+                boxShadow: 'var(--shadow-glow)'
+              }}
+              className="theme-card-bg rounded-2xl p-6 border theme-border text-center transition-all duration-300"
             >
-              <div className="text-4xl font-bold theme-accent-text mb-1">
+              <div className="text-3xl sm:text-4xl font-extrabold theme-accent-text mb-1 leading-none">
                 <AnimatedCounter target={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="text-sm theme-text-muted">{stat.label}</p>
+              <p className="text-xs uppercase tracking-widest font-mono font-bold theme-text-muted mt-2">{stat.label}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -95,21 +115,24 @@ export default function FunFactsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-2 md:grid-cols-3 gap-4"
+          className="grid grid-cols-2 md:grid-cols-3 gap-5"
         >
           {funFacts.map((fact, i) => (
             <motion.div
               key={i}
               variants={item}
               whileHover={{
-                scale: 1.04,
-                boxShadow: '0 0 24px var(--glow-color)',
+                scale: 1.03,
+                borderColor: 'var(--accent-primary)',
+                boxShadow: 'var(--shadow-glow)'
               }}
-              className="theme-card-bg rounded-xl p-4 border theme-border flex flex-col items-center text-center cursor-default transition-shadow"
+              className="theme-card-bg rounded-2xl p-5 border theme-border flex flex-col items-center text-center cursor-default transition-all duration-300"
             >
-              <span className="text-3xl mb-2">{fact.icon}</span>
-              <p className="font-semibold theme-text text-sm">{fact.label}</p>
-              <p className="text-xs theme-text-muted mt-1 leading-relaxed">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] mb-4">
+                <span className="text-2xl">{fact.icon}</span>
+              </div>
+              <p className="font-bold theme-text text-sm sm:text-base">{fact.label}</p>
+              <p className="text-xs theme-text-secondary mt-2 leading-relaxed">
                 {fact.detail}
               </p>
             </motion.div>

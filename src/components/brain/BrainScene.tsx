@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useMemo, useEffect, useRef } from 'react';
+import { Suspense, useMemo, useEffect, useRef, type ElementRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -17,13 +17,21 @@ interface BrainSceneProps {
   activeNodeId: string | null;
 }
 
+type OrbitControlsRefType = ElementRef<typeof OrbitControls>;
+
 /**
  * Handles smooth camera transitions (zoom and target centering) 
  * only when a node is clicked or cleared. Allows full user orbital 
  * controls (pan/zoom/rotate) once the transition is complete.
  */
-function CameraController({ activeNodeId }: { activeNodeId: string | null }) {
-  const { camera, controls } = useThree();
+function CameraController({ 
+  activeNodeId, 
+  controlsRef 
+}: { 
+  activeNodeId: string | null; 
+  controlsRef: React.RefObject<OrbitControlsRefType | null>; 
+}) {
+  const { camera } = useThree();
   const isTransitioning = useRef(false);
 
   // Trigger camera transition when activeNodeId changes
@@ -48,7 +56,7 @@ function CameraController({ activeNodeId }: { activeNodeId: string | null }) {
   const defaultCameraPos = useMemo(() => new THREE.Vector3(0, 1, 5.5), []);
 
   useFrame((_, delta) => {
-    const orbit = controls as any;
+    const orbit = controlsRef.current;
     if (!orbit) return;
 
     if (isTransitioning.current) {
@@ -112,6 +120,8 @@ function SceneContent({
   onNodeClick,
   activeNodeId,
 }: BrainSceneProps) {
+  const controlsRef = useRef<OrbitControlsRefType>(null);
+
   return (
     <>
       {/* Lighting */}
@@ -124,6 +134,7 @@ function SceneContent({
 
       {/* Camera controls */}
       <OrbitControls
+        ref={controlsRef}
         makeDefault
         enablePan={true}
         enableZoom={true}
@@ -155,7 +166,7 @@ function SceneContent({
       />
 
       {/* Camera Zoom Controller */}
-      <CameraController activeNodeId={activeNodeId} />
+      <CameraController activeNodeId={activeNodeId} controlsRef={controlsRef} />
     </>
   );
 }
