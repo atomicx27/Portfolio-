@@ -113,6 +113,7 @@ export default function ProjectsSection() {
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const terminalBottomRef = useRef<HTMLDivElement>(null);
+  const terminalIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Group projects by category
   const categories: ProjectCategory[] = ['AI/ML', 'Full-Stack', 'Tools', 'Open Source', 'Experiments'];
@@ -124,25 +125,38 @@ export default function ProjectsSection() {
   };
 
   const triggerTerminalAnimation = (projectId: string) => {
+    if (terminalIntervalRef.current) {
+      clearInterval(terminalIntervalRef.current);
+    }
+
     const logs = PROJECT_LOGS[projectId] || DEFAULT_LOGS;
     setTerminalLines([`$ ${logs[0]}`]);
     let index = 1;
 
     const interval = setInterval(() => {
       if (index < logs.length) {
-        setTerminalLines(prev => [...prev, logs[index]]);
+        const nextLine = logs[index];
+        setTerminalLines(prev => [...prev, nextLine]);
         index++;
       } else {
-        clearInterval(interval);
+        if (terminalIntervalRef.current) {
+          clearInterval(terminalIntervalRef.current);
+          terminalIntervalRef.current = null;
+        }
       }
     }, 180);
 
-    return () => clearInterval(interval);
+    terminalIntervalRef.current = interval;
   };
 
-  // Run terminal build on initial load
+  // Run terminal build on initial load and clean up interval on unmount
   useEffect(() => {
     triggerTerminalAnimation(activeProject.id);
+    return () => {
+      if (terminalIntervalRef.current) {
+        clearInterval(terminalIntervalRef.current);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -607,6 +621,7 @@ export default function ProjectsSection() {
                 {/* Terminal Output Logs */}
                 <div className="flex-1 p-3.5 overflow-y-auto space-y-1 scrollbar-none text-[#a0a0b8]">
                   {terminalLines.map((line, i) => {
+                    if (!line) return null;
                     const isCommand = line.startsWith('$');
                     const isError = line.toLowerCase().includes('error');
                     const isSuccess = line.toLowerCase().includes('success') || line.toLowerCase().includes('online') || line.toLowerCase().includes('active');
