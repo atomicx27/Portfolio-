@@ -23,6 +23,7 @@ export const projects: Project[] = [
     techStack: ['Node.js', 'PixiJS v8', 'Colyseus', 'Fastify', 'WebSockets', 'libSQL', 'Turso', 'SQLite', 'Vite'],
     category: 'Full-Stack',
     githubUrl: 'https://github.com/atomicx27/Words_builder',
+    liveUrl: 'https://words-builder.pashin-kasad.workers.dev/',
     featured: true,
     priority: 1,
     icon: '🎮',
