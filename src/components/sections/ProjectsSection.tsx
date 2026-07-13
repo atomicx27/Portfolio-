@@ -172,7 +172,78 @@ function AtashMockup() {
   );
 }
 
-// 5. General Fallback Mockup
+// 5. Words Builder Mockup Component
+function WordsBuilderMockup() {
+  return (
+    <div className="w-full h-full flex flex-col bg-[#07070a] font-mono text-[9px] text-[#a0a0b8] p-3 overflow-hidden select-none">
+      {/* Header Info */}
+      <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
+        <div className="flex items-center gap-1">
+          <span className="text-[var(--accent-secondary)] font-bold">WORDS BUILDER</span>
+          <span className="text-[7px] bg-[var(--accent-secondary)]/10 text-[var(--accent-secondary)] px-1 rounded">2D Board</span>
+        </div>
+        <div className="flex items-center gap-2 text-[8px]">
+          <span className="text-green-400">Plays: 42/50</span>
+          <span className="text-white">Score: 128</span>
+        </div>
+      </div>
+
+      {/* 2D Grid Visual */}
+      <div className="flex-1 bg-[#050508] border border-white/5 rounded p-1 flex items-center justify-center relative overflow-hidden">
+        {/* Infinite Grid Background Lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:10px_10px]" />
+        
+        {/* Word Placements */}
+        <div className="relative flex flex-col gap-0.5 items-center justify-center scale-90">
+          {/* Horizontal: BUILDER */}
+          <div className="flex gap-0.5">
+            {['B', 'U', 'I', 'L', 'D', 'E', 'R'].map((letter, i) => (
+              <div 
+                key={i} 
+                className={`w-4.5 h-4.5 rounded flex items-center justify-center text-[9px] font-black shadow-sm ${
+                  letter === 'L' 
+                    ? 'bg-yellow-500/80 text-black border border-yellow-400/50' 
+                    : 'bg-[#1c1c24] text-white border border-white/10'
+                }`}
+              >
+                {letter}
+              </div>
+            ))}
+          </div>
+
+          {/* Vertical: WORD intersecting at 'L' */}
+          <div className="absolute left-[33px] -top-[33px] flex flex-col gap-0.5 pointer-events-none">
+            <div className="w-4.5 h-4.5 rounded bg-[#1c1c24] text-white border border-white/10 flex items-center justify-center text-[9px] font-black">W</div>
+            <div className="w-4.5 h-4.5 rounded bg-[#1c1c24] text-white border border-white/10 flex items-center justify-center text-[9px] font-black">O</div>
+            <div className="w-4.5 h-4.5 rounded bg-[#1c1c24] text-white border border-white/10 flex items-center justify-center text-[9px] font-black">R</div>
+          </div>
+          <div className="absolute left-[33px] top-[19px] flex flex-col gap-0.5 pointer-events-none">
+            <div className="w-4.5 h-4.5 rounded bg-[#1c1c24] text-white border border-white/10 flex items-center justify-center text-[9px] font-black">D</div>
+          </div>
+        </div>
+
+        {/* Origin Center Star Overlay */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/10 text-xl font-bold select-none pointer-events-none">
+          ★
+        </div>
+      </div>
+
+      {/* Player Rack */}
+      <div className="h-6 mt-2 flex items-center justify-between border-t border-white/5 pt-1.5 flex-shrink-0 select-none">
+        <span className="text-[7px] text-white/40 uppercase font-bold">Your Rack:</span>
+        <div className="flex gap-0.5">
+          {['A', 'K', 'E', 'T', 'P', 'S', '*'].map((letter, i) => (
+            <div key={i} className="w-3.5 h-3.5 bg-[#14141c] border border-white/10 rounded flex items-center justify-center text-[7px] font-bold text-white/90">
+              {letter}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 6. General Fallback Mockup
 function FallbackMockup({ project }: { project: Project }) {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center bg-[#07070a] p-4 text-center font-mono text-[9px] relative overflow-hidden select-none">
@@ -223,6 +294,8 @@ export default function ProjectsSection() {
   // Render project mockup dynamically
   const renderProjectMockup = (project: Project) => {
     switch (project.id) {
+      case 'words-builder':
+        return <WordsBuilderMockup />;
       case 'brenda':
         return <BrendaMockup />;
       case 'logiquote':

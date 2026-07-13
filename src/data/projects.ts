@@ -16,6 +16,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: 'words-builder',
+    title: 'Words Builder',
+    description: 'Real-time infinite-board multiplayer Scrabble-like game with synced WebSockets and Turso Cloud.',
+    longDescription: 'A massive multiplayer online Scrabble game built on an infinite 2D grid. Uses PixiJS v8 for high-performance canvas rendering and infinite viewport zooming, Colyseus for state-synchronized room lobby management, Fastify for REST guest/credentials authentication, and Turso Cloud/libSQL client for persistent SQLite databases. Features daily action limits, multiplier bonuses, and server-side Trie dictionary verification.',
+    techStack: ['Node.js', 'PixiJS v8', 'Colyseus', 'Fastify', 'WebSockets', 'libSQL', 'Turso', 'SQLite', 'Vite'],
+    category: 'Full-Stack',
+    githubUrl: 'https://github.com/atomicx27/Words_builder',
+    featured: true,
+    priority: 1,
+    icon: '🎮',
+  },
+  {
     id: 'brenda',
     title: 'Brenda — Freelance Marketplace',
     description: 'A comprehensive full-stack freelancing platform with AI-powered features, real-time chat, and workflow automation.',
@@ -24,7 +36,7 @@ export const projects: Project[] = [
     category: 'Full-Stack',
     githubUrl: 'https://github.com/atomicx27/brenda-freelancing-platform',
     featured: true,
-    priority: 1,
+    priority: 2,
     icon: '🚀',
   },
   {
@@ -36,7 +48,7 @@ export const projects: Project[] = [
     category: 'AI/ML',
     githubUrl: 'https://github.com/atomicx27/logiquote',
     featured: true,
-    priority: 2,
+    priority: 3,
     icon: '📦',
   },
   {
@@ -48,7 +60,7 @@ export const projects: Project[] = [
     category: 'Tools',
     githubUrl: 'https://github.com/atomicx27/open-bi',
     featured: true,
-    priority: 3,
+    priority: 4,
     icon: '📊',
   },
   {
@@ -60,7 +72,7 @@ export const projects: Project[] = [
     category: 'Full-Stack',
     githubUrl: 'https://github.com/atomicx27/atash',
     featured: true,
-    priority: 4,
+    priority: 5,
     icon: '🔥',
   },
   {
@@ -72,7 +84,7 @@ export const projects: Project[] = [
     category: 'Full-Stack',
     githubUrl: 'https://github.com/atomicx27/afterwords',
     featured: true,
-    priority: 5,
+    priority: 6,
     icon: '💌',
   },
   {
@@ -84,7 +96,7 @@ export const projects: Project[] = [
     category: 'AI/ML',
     githubUrl: 'https://github.com/atomicx27/outlook-mail-router',
     featured: true,
-    priority: 6,
+    priority: 7,
     icon: '📧',
   },
   {
@@ -96,7 +108,7 @@ export const projects: Project[] = [
     category: 'AI/ML',
     githubUrl: 'https://github.com/atomicx27/anime-ai-suite',
     featured: true,
-    priority: 7,
+    priority: 8,
     icon: '🎌',
   },
   {
