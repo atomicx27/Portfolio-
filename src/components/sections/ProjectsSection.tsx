@@ -1,199 +1,252 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Folder, 
-  FileCode, 
-  Terminal as TerminalIcon, 
-  Play, 
   Github, 
-  Search, 
-  Copy, 
-  Check, 
+  ExternalLink, 
   ChevronRight, 
-  ChevronDown, 
-  Sidebar as SidebarIcon,
-  Code as CodeIcon,
-  Layers,
-  FolderOpen
+  X, 
+  Check, 
+  Terminal, 
+  Sparkles, 
+  Cpu, 
+  Info,
+  Code
 } from 'lucide-react';
 import { projects, type Project, type ProjectCategory } from '@/data/projects';
 
-// Simulated terminal build logs per project
-const PROJECT_LOGS: Record<string, string[]> = {
-  brenda: [
-    'npm run dev',
-    '>> [vite] v5.1.4 dev server running...',
-    '>> [vite] local: http://localhost:5173/',
-    '>> [db] Connected to PostgreSQL at localhost:5432',
-    '>> [db] Prisma ORM schema synced successfully',
-    '>> [socket] Socket.IO listener established on port 8080',
-    '>> [ai] Google Gemini orchestrator initialized',
-    '>> [system] Status: Brenda platform ONLINE'
-  ],
-  logiquote: [
-    'python main.py',
-    '>> [core] Bootstrapping Multi-Provider LLM orchestration...',
-    '>> [core] Registered 7 AI Backends (OpenAI, Anthropic, Gemini, Groq, Nim, Ollama)',
-    '>> [schema] Zod validators loaded for 20+ logistics attributes',
-    '>> [email] Polling freight forwarder IMAP inboxes...',
-    '>> [inference] Processing raw cargo text via Groq/Llama3 (latency: 380ms)',
-    '>> [validation] Structured validation complete (Confidence: 98.4%)',
-    '>> [system] Output exported to ERP-XML schema successfully'
-  ],
-  'open-bi': [
-    'npm run start:mcp',
-    '>> [mcp] Model Context Protocol server starting...',
-    '>> [mcp] Protocol: JSON-RPC over stdio',
-    '>> [pbir] PBIR Layout Generator schema v1 loaded',
-    '>> [tmdl] TMDL tabular model parser online',
-    '>> [audit] Collision bounds checking engine activated',
-    '>> [system] Open BI server listening. Standby for LLM tool calls...'
-  ],
-  atash: [
-    'npm run dev:v4',
-    '>> [next] Next.js v16.2.10 starting...',
-    '>> [next] Turbopack compiler running...',
-    '>> [style] Tailwind CSS v4 assets compiled',
-    '>> [db] Supabase client authentication initialized',
-    '>> [auth] Parsi Invitation-Voucher verification service online',
-    '>> [system] Atash Matchmaker server active'
-  ],
-  afterwords: [
-    'flutter run',
-    '>> [flutter] Launching lib/main.dart on iOS Simulator...',
-    '>> [flutter] Compiling assets & Dart package dependencies...',
-    '>> [db] Connecting to Supabase storage buckets',
-    '>> [switch] Dead-man switch inactivity daemon running in bg',
-    '>> [sms] WhatsApp Gateway service validated',
-    '>> [system] Flutter application deployed successfully'
-  ],
-  'outlook-router': [
-    'python mail_router.py',
-    '>> [outlook] Outlook Graph API credentials accepted',
-    '>> [llm] Loading local Mistral-7B weights (quantized 4-bit)...',
-    '>> [llm] Local GPU model layer allocation complete',
-    '>> [router] Inbox monitor listening for incoming mail streams...',
-    '>> [router] Event extracted: Created task: Calendar Conflict Resolve',
-    '>> [system] Routing daemon active. Zero-touch router running.'
-  ],
-  'anime-ai': [
-    'python run_arena.py',
-    '>> [ai] Initializing character prompt compiler...',
-    '>> [ai] Loaded MBTI character sheet definitions (Naruto, Goku, etc.)',
-    '>> [agent] Launching ReAct loop (Max iterations: 5)',
-    '>> [arena] Council AI moderation queue initialized',
-    '>> [battle] Goku vs Naruto philosophical debate active',
-    '>> [system] Simulator running at http://localhost:8000'
-  ]
-};
+// 1. Brenda Mockup Component
+function BrendaMockup() {
+  return (
+    <div className="w-full h-full flex flex-col bg-[#07070a] font-mono text-[9px] text-[#a0a0b8] p-3 overflow-hidden select-none">
+      <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
+        <div className="flex items-center gap-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+          <span className="text-[var(--accent-primary)] font-bold">BRENDA DASHBOARD</span>
+        </div>
+        <span className="text-white/40">v2.1.0</span>
+      </div>
+      
+      {/* Stats Cards Row */}
+      <div className="grid grid-cols-3 gap-1.5 mb-2.5">
+        <div className="bg-white/5 border border-white/5 rounded p-1.5 text-center">
+          <div className="text-[7px] text-white/40 uppercase">Earnings</div>
+          <div className="text-xs font-black text-green-400">$12,450</div>
+        </div>
+        <div className="bg-white/5 border border-white/5 rounded p-1.5 text-center">
+          <div className="text-[7px] text-white/40 uppercase">Active Bids</div>
+          <div className="text-xs font-black text-[var(--accent-primary)]">8</div>
+        </div>
+        <div className="bg-white/5 border border-white/5 rounded p-1.5 text-center">
+          <div className="text-[7px] text-white/40 uppercase">Success Rate</div>
+          <div className="text-xs font-black text-[var(--accent-secondary)]">99%</div>
+        </div>
+      </div>
 
-// Default logs for other projects
-const DEFAULT_LOGS = [
-  'npm run dev',
-  '>> [next] Starting local server...',
-  '>> [next] Compiled assets successfully',
-  '>> [db] Mock database connectivity ready',
-  '>> [system] Project running at http://localhost:3000'
-];
+      {/* Bid Progress */}
+      <div className="flex-1 flex flex-col gap-2 overflow-hidden justify-center">
+        <div className="space-y-1">
+          <div className="flex justify-between text-[8px]">
+            <span>AI Matchmaker Engine</span>
+            <span className="text-green-400">Match 98%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] w-[98%]" />
+          </div>
+        </div>
+        <div className="space-y-1">
+          <div className="flex justify-between text-[8px]">
+            <span>Zendesk Support Integration</span>
+            <span className="text-green-400">Match 92%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] w-[92%]" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 2. LogiQuote Mockup Component
+function LogiQuoteMockup() {
+  return (
+    <div className="w-full h-full flex bg-[#07070a] font-mono text-[9px] text-[#a0a0b8] p-3 overflow-hidden select-none gap-2">
+      {/* Email Box */}
+      <div className="w-[45%] border-r border-white/5 pr-2 flex flex-col justify-between">
+        <div className="text-[7px] text-white/30 uppercase border-b border-white/5 pb-1">Incoming Email</div>
+        <div className="flex-1 flex flex-col gap-1 mt-1 text-[8px] leading-tight text-white/60">
+          <div><span className="text-[var(--accent-primary)]">From:</span> Freight Corp</div>
+          <div><span className="text-[var(--accent-primary)]">Subj:</span> Request Quote</div>
+          <div className="text-[7px] text-white/40 mt-1 border-t border-white/5 pt-1">
+            Need rates for shipping 20 pallets from Mumbai Port to New York Terminal...
+          </div>
+        </div>
+      </div>
+      
+      {/* JSON Output */}
+      <div className="flex-1 flex flex-col justify-between pl-1">
+        <div className="text-[7px] text-[#00f0ff] uppercase border-b border-white/5 pb-1">Parsed JSON Data</div>
+        <div className="flex-1 mt-1 text-[7px] text-[#00f0ff] space-y-0.5 leading-normal">
+          <div>{'{'}</div>
+          <div className="pl-2">&quot;origin&quot;: &quot;Mumbai Port&quot;,</div>
+          <div className="pl-2">&quot;destination&quot;: &quot;New York&quot;,</div>
+          <div className="pl-2">&quot;pallets&quot;: 20,</div>
+          <div className="pl-2">&quot;confidence&quot;: 0.984</div>
+          <div>{'}'}</div>
+        </div>
+        <div className="text-[8px] text-green-400 font-bold border-t border-white/5 pt-1 flex items-center gap-1">
+          <Check size={10} /> Validated (Groq/Llama3)
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 3. Open BI Mockup Component
+function OpenBIMockup() {
+  return (
+    <div className="w-full h-full flex flex-col bg-[#07070a] font-mono text-[9px] text-[#a0a0b8] p-3 overflow-hidden select-none">
+      <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded bg-blue-500" />
+          <span className="text-[#a78bfa] font-bold">POWER BI MCP SERVER</span>
+        </div>
+        <span className="text-green-400 font-bold">READY</span>
+      </div>
+      
+      {/* Grid Charts */}
+      <div className="flex-1 grid grid-cols-2 gap-2 mt-1">
+        <div className="bg-white/5 border border-white/5 rounded p-2 flex flex-col justify-between">
+          <span className="text-[7px] text-white/40">Visual: BarChart</span>
+          <div className="flex items-end gap-1 h-8 mt-1 pr-1">
+            <div className="w-full bg-[var(--accent-primary)] h-[40%] rounded-t-sm" />
+            <div className="w-full bg-[var(--accent-primary)] h-[85%] rounded-t-sm" />
+            <div className="w-full bg-[var(--accent-primary)] h-[60%] rounded-t-sm" />
+          </div>
+        </div>
+        
+        <div className="bg-white/5 border border-white/5 rounded p-2 flex flex-col justify-between">
+          <span className="text-[7px] text-white/40">DevOps TMDL Diff</span>
+          <div className="flex-1 mt-1 text-[6px] text-green-400 flex flex-col gap-0.5 font-bold">
+            <span className="text-red-400">- height: 350px</span>
+            <span>+ height: 420px</span>
+            <span>+ theme: Glassmorphism</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 4. Atash Mockup Component
+function AtashMockup() {
+  return (
+    <div className="w-full h-full flex bg-[#07070a] justify-center items-center p-3 select-none">
+      {/* Mobile Device */}
+      <div className="w-32 h-full rounded-xl border border-white/10 bg-[#0e0e13] overflow-hidden flex flex-col relative shadow-md">
+        {/* Dynamic Card */}
+        <div className="flex-1 p-2 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10" />
+          {/* Avatar Area */}
+          <div className="flex-1 rounded bg-[#1c1c24] flex items-center justify-center text-xl">
+            🔥
+          </div>
+          
+          <div className="relative z-20 mt-1">
+            <div className="text-[10px] font-bold text-white flex items-center gap-1">
+              Zubin, 27 <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+            </div>
+            <div className="text-[7px] text-white/60">Mumbai · Parsi Heritage</div>
+          </div>
+        </div>
+        
+        {/* Actions */}
+        <div className="h-6 border-t border-white/5 bg-[#0a0a0f] flex items-center justify-around text-[10px] flex-shrink-0">
+          <span className="text-red-400 cursor-pointer">✕</span>
+          <span className="text-green-400 cursor-pointer">♥</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 5. General Fallback Mockup
+function FallbackMockup({ project }: { project: Project }) {
+  return (
+    <div className="w-full h-full flex flex-col justify-center items-center bg-[#07070a] p-4 text-center font-mono text-[9px] relative overflow-hidden select-none">
+      <div className="absolute -right-8 -bottom-8 w-20 h-20 bg-[var(--accent-primary)]/5 rounded-full blur-xl" />
+      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-xl shadow-md mb-2">
+        {project.icon}
+      </div>
+      <div className="text-white font-bold">{project.title}</div>
+      <div className="text-[7px] text-white/40 mt-1 uppercase tracking-widest">{project.techStack.slice(0, 3).join(' · ')}</div>
+    </div>
+  );
+}
 
 export default function ProjectsSection() {
-  const [activeProject, setActiveProject] = useState<Project>(projects[0]);
-  const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({
-    'AI/ML': true,
-    'Full-Stack': true,
-    'Tools': true,
-    'Open Source': false,
-    'Experiments': false
-  });
-  const [activeTab, setActiveTab] = useState<string>('code'); // 'code' | 'preview'
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<ProjectCategory>('All');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeModalTab, setActiveModalTab] = useState<'overview' | 'features' | 'code'>('overview');
   const [copied, setCopied] = useState(false);
-  const [terminalLines, setTerminalLines] = useState<string[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const terminalBottomRef = useRef<HTMLDivElement>(null);
-  const terminalIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Group projects by category
-  const categories: ProjectCategory[] = ['AI/ML', 'Full-Stack', 'Tools', 'Open Source', 'Experiments'];
+  const categories: ProjectCategory[] = ['All', 'AI/ML', 'Full-Stack', 'Tools', 'Experiments'];
 
-  // Handle project selection and trigger terminal log animation
-  const handleSelectProject = (project: Project) => {
-    setActiveProject(project);
-    triggerTerminalAnimation(project.id);
-  };
-
-  const triggerTerminalAnimation = (projectId: string) => {
-    if (terminalIntervalRef.current) {
-      clearInterval(terminalIntervalRef.current);
-    }
-
-    const logs = PROJECT_LOGS[projectId] || DEFAULT_LOGS;
-    setTerminalLines([`$ ${logs[0]}`]);
-    let index = 1;
-
-    const interval = setInterval(() => {
-      if (index < logs.length) {
-        const nextLine = logs[index];
-        setTerminalLines(prev => [...prev, nextLine]);
-        index++;
-      } else {
-        if (terminalIntervalRef.current) {
-          clearInterval(terminalIntervalRef.current);
-          terminalIntervalRef.current = null;
-        }
-      }
-    }, 180);
-
-    terminalIntervalRef.current = interval;
-  };
-
-  // Run terminal build on initial load and clean up interval on unmount
+  // Handle body scroll locking when modal is open
   useEffect(() => {
-    triggerTerminalAnimation(activeProject.id);
+    if (selectedProject) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
     return () => {
-      if (terminalIntervalRef.current) {
-        clearInterval(terminalIntervalRef.current);
-      }
+      document.body.style.overflow = '';
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedProject]);
 
-  // Scroll terminal to bottom
-  useEffect(() => {
-    if (terminalBottomRef.current) {
-      terminalBottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [terminalLines]);
-
-  const toggleFolder = (folder: string) => {
-    setOpenFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
-  };
-
-  const handleCopyClone = () => {
-    const cloneCmd = `git clone ${activeProject.githubUrl}`;
+  const handleCopyClone = (githubUrl: string) => {
+    const cloneCmd = `git clone ${githubUrl}`;
     navigator.clipboard.writeText(cloneCmd);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Filter projects based on search query
-  const filteredProjects = projects.filter(p => 
-    p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.techStack.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Filter projects list
+  const filteredProjects = projects.filter(p => {
+    if (activeFilter === 'All') return true;
+    return p.category === activeFilter;
+  });
+
+  // Render project mockup dynamically
+  const renderProjectMockup = (project: Project) => {
+    switch (project.id) {
+      case 'brenda':
+        return <BrendaMockup />;
+      case 'logiquote':
+        return <LogiQuoteMockup />;
+      case 'open-bi':
+        return <OpenBIMockup />;
+      case 'atash':
+        return <AtashMockup />;
+      default:
+        return <FallbackMockup project={project} />;
+    }
+  };
 
   return (
     <section id="projects" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-[var(--bg-primary)] overflow-hidden">
-      {/* Ambient background glow */}
-      <div className="absolute top-[30%] left-[50%] -translate-x-1/2 w-[800px] h-[550px] rounded-full bg-[var(--accent-primary)]/5 blur-[140px] pointer-events-none" />
+      {/* Background glow radial */}
+      <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[850px] h-[550px] rounded-full bg-[var(--accent-primary)]/5 blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
+        
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold theme-text mb-4">
-            Projects Workspace
+            Selected Work
           </h2>
           <div
             className="h-1.5 w-24 mx-auto rounded-full mb-5"
@@ -202,448 +255,374 @@ export default function ProjectsSection() {
             }}
           />
           <p className="max-w-2xl mx-auto text-base sm:text-lg theme-text-secondary">
-            Explore my code editor. Click folders in the explorer panel on the left to inspect file structures, tech specs, and run live diagnostic builds.
+            A curated list of my latest developer applications, MCP servers, artificial intelligence agents, and system utilities.
           </p>
         </div>
 
-        {/* ── IDE Container ── */}
-        <div className="w-full rounded-2xl border theme-border overflow-hidden shadow-2xl flex flex-col h-[700px] md:h-[650px] bg-[#07070a] backdrop-blur-md">
-          
-          {/* 1. IDE Top Title Bar */}
-          <div className="h-10 bg-[#0e0e13] border-b theme-border flex items-center justify-between px-4 select-none flex-shrink-0">
-            {/* Windows Style Control Buttons */}
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
-            </div>
-            
-            {/* File name path */}
-            <div className="text-xs font-mono theme-text-muted flex items-center gap-1.5">
-              <span className="text-[#ff2d95] font-bold">pashin-dev-editor</span>
-              <span>/</span>
-              <span>src</span>
-              <span>/</span>
-              <span>projects</span>
-              <span>/</span>
-              <span className="theme-text font-semibold">{activeProject.id}.tsx</span>
-            </div>
-
-            {/* Editor toggle button */}
-            <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="theme-text-muted hover:theme-text p-1 rounded transition-colors cursor-pointer"
-              title="Toggle Sidebar"
+        {/* ── Filter Tab Bar ── */}
+        <div className="flex justify-center flex-wrap gap-2 mb-12 select-none">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveFilter(category)}
+              className={`px-5 py-2.5 rounded-full text-xs font-mono font-bold tracking-wide transition-all duration-300 relative overflow-hidden border cursor-pointer ${
+                activeFilter === category
+                  ? 'bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] text-white border-transparent shadow-lg shadow-[var(--accent-primary)]/10 scale-105'
+                  : 'theme-card-bg theme-border theme-text-secondary hover:theme-text hover:border-[var(--accent-primary)]/30'
+              }`}
             >
-              <SidebarIcon size={16} />
+              {category}
             </button>
-          </div>
+          ))}
+        </div>
 
-          <div className="flex-1 flex overflow-hidden min-h-0">
-            {/* 2. IDE Sidebar Activity Bar (Thin icon list) */}
-            <div className="w-12 bg-[#0a0a0f] border-r theme-border flex flex-col items-center py-4 gap-5 select-none flex-shrink-0">
-              <div className="p-2 text-[var(--accent-primary)] border-l-2 border-[var(--accent-primary)]">
-                <CodeIcon size={20} />
-              </div>
-              <div className="p-2 theme-text-muted hover:theme-text cursor-pointer transition-colors">
-                <Layers size={20} />
-              </div>
-              <div className="p-2 theme-text-muted hover:theme-text cursor-pointer transition-colors mt-auto">
-                <TerminalIcon size={20} />
-              </div>
-            </div>
-
-            {/* 3. IDE File Explorer Sidebar */}
-            <AnimatePresence initial={false}>
-              {sidebarOpen && (
-                <motion.div 
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 220, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  className="bg-[#0c0c11] border-r theme-border flex flex-col select-none flex-shrink-0 overflow-hidden"
-                >
-                  {/* Explorer Title */}
-                  <div className="p-3 border-b theme-border flex items-center justify-between text-[10px] font-bold font-mono uppercase tracking-wider theme-text-muted">
-                    <span>Explorer</span>
-                    <span className="text-[var(--accent-primary)] font-semibold">Workspace</span>
-                  </div>
-
-                  {/* Sidebar Search Bar */}
-                  <div className="p-2.5 border-b theme-border relative">
-                    <Search className="w-3.5 h-3.5 absolute left-4.5 top-1/2 -translate-y-1/2 theme-text-muted" />
-                    <input 
-                      type="text" 
-                      placeholder="Search files..." 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-[#07070a] border theme-border rounded-lg pl-8 pr-3 py-1 text-xs font-mono theme-text placeholder:theme-text-muted outline-none focus:border-[var(--accent-primary)]/50 transition-colors"
-                    />
-                  </div>
-
-                  {/* Folder File Tree */}
-                  <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin">
-                    {categories.map(category => {
-                      const categoryProjects = filteredProjects.filter(p => p.category === category);
-                      if (categoryProjects.length === 0) return null;
-                      
-                      const isOpen = openFolders[category];
-
-                      return (
-                        <div key={category} className="space-y-0.5">
-                          {/* Folder Header */}
-                          <button
-                            onClick={() => toggleFolder(category)}
-                            className="w-full flex items-center gap-1.5 px-2 py-1 text-xs font-mono font-semibold theme-text-secondary hover:bg-white/5 rounded transition-colors text-left cursor-pointer"
-                          >
-                            <span className="theme-text-muted">
-                              {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                            </span>
-                            <span className="text-yellow-500/80">
-                              {isOpen ? <FolderOpen size={14} /> : <Folder size={14} />}
-                            </span>
-                            <span className="truncate">{category}</span>
-                          </button>
-
-                          {/* Folder Files */}
-                          {isOpen && (
-                            <div className="pl-4 space-y-0.5">
-                              {categoryProjects.map(project => {
-                                const isActive = activeProject.id === project.id;
-                                return (
-                                  <button
-                                    key={project.id}
-                                    onClick={() => handleSelectProject(project)}
-                                    className={`w-full flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded transition-colors text-left cursor-pointer ${
-                                      isActive 
-                                        ? 'bg-[var(--accent-primary)]/10 theme-accent-text font-bold border-l-2 border-[var(--accent-primary)]' 
-                                        : 'theme-text-muted hover:bg-white/5 hover:theme-text'
-                                    }`}
-                                  >
-                                    <FileCode size={13} className={isActive ? 'text-[var(--accent-primary)]' : 'text-[#a78bfa]/80'} />
-                                    <span className="truncate">{project.id}.tsx</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* 4. Main Code Editor Panel */}
-            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-              
-              {/* Tab Header bar */}
-              <div className="h-9 bg-[#0c0c11] border-b theme-border flex items-center px-2 select-none overflow-x-auto no-scrollbar flex-shrink-0">
-                <div className="flex items-center h-full">
-                  <div className="flex items-center gap-1.5 px-4 h-full bg-[#07070a] border-t-2 border-[var(--accent-primary)] border-r theme-border text-xs font-mono font-semibold theme-text">
-                    <FileCode size={13} className="text-[var(--accent-primary)]" />
-                    <span>{activeProject.id}.tsx</span>
+        {/* ── Projects Cards Grid ── */}
+        <motion.div 
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project) => (
+              <motion.div
+                layout
+                key={project.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className="theme-card-bg border theme-border rounded-2xl overflow-hidden flex flex-col group hover:border-[var(--accent-primary)]/50 hover:shadow-xl hover:shadow-[var(--accent-primary)]/3 transition-all duration-300 relative h-[380px]"
+              >
+                {/* Visual App Mockup Preview */}
+                <div className="h-44 border-b theme-border overflow-hidden relative bg-[#09090d]">
+                  {/* Glowing background mesh gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent-primary)]/10 via-transparent to-[var(--accent-secondary)]/5 opacity-40 group-hover:opacity-60 transition-opacity duration-300" />
+                  
+                  {/* Dynamic Mockup viewport */}
+                  <div className="w-full h-full p-3.5 flex items-center justify-center transition-transform duration-500 group-hover:scale-103">
+                    <div className="w-full h-full rounded-xl border theme-border bg-[#07070a] overflow-hidden shadow-inner flex flex-col">
+                      {/* Fake browser bar */}
+                      <div className="h-5 bg-[#0a0a0f] border-b theme-border flex items-center px-2 gap-1.5 flex-shrink-0 select-none">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                      </div>
+                      <div className="flex-1 min-h-0">
+                        {renderProjectMockup(project)}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Switcher Tab View (Code / Live Preview) */}
-                <div className="ml-auto flex items-center gap-1 px-3">
-                  <button 
-                    onClick={() => setActiveTab('code')}
-                    className={`px-3 py-1 rounded-lg text-[10px] font-bold font-mono uppercase tracking-wider transition-all cursor-pointer ${
-                      activeTab === 'code' 
-                        ? 'bg-[var(--accent-primary)]/15 theme-accent-text border border-[var(--accent-primary)]/30' 
-                        : 'theme-text-muted hover:theme-text'
-                    }`}
-                  >
-                    Code Config
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('preview')}
-                    className={`px-3 py-1 rounded-lg text-[10px] font-bold font-mono uppercase tracking-wider transition-all cursor-pointer ${
-                      activeTab === 'preview' 
-                        ? 'bg-[var(--accent-primary)]/15 theme-accent-text border border-[var(--accent-primary)]/30' 
-                        : 'theme-text-muted hover:theme-text'
-                    }`}
-                  >
-                    Live Preview
-                  </button>
-                </div>
-              </div>
+                {/* Details Footer */}
+                <div className="flex-1 p-5 flex flex-col justify-between min-h-0 bg-gradient-to-b from-transparent to-[#07070a]/40">
+                  <div className="space-y-2.5">
+                    {/* Category tag */}
+                    <div className="flex justify-between items-center select-none">
+                      <span className="text-[9px] uppercase tracking-widest font-black font-mono bg-[var(--accent-primary)]/10 theme-accent-text px-2 py-0.5 rounded border border-[var(--accent-primary)]/20">
+                        {project.category}
+                      </span>
+                      {project.featured && (
+                        <span className="text-[9px] font-bold text-yellow-500 flex items-center gap-1 select-none">
+                          <Sparkles size={10} className="fill-current" /> Featured
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Title */}
+                    <h3 className="text-base sm:text-lg font-black theme-text tracking-wide group-hover:text-[var(--accent-primary)] transition-colors line-clamp-1">
+                      {project.title}
+                    </h3>
+                    
+                    {/* Short Description */}
+                    <p className="text-xs theme-text-secondary leading-normal line-clamp-2">
+                      {project.description}
+                    </p>
+                  </div>
 
-              {/* Editor Workspace */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#07070a] scrollbar-thin">
-                <AnimatePresence mode="wait">
-                  {activeTab === 'code' ? (
-                    <motion.div
-                      key="code"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
+                  {/* Actions row */}
+                  <div className="pt-4 border-t theme-border flex items-center justify-between">
+                    {/* Mini tech tags */}
+                    <div className="flex gap-1.5 overflow-hidden select-none">
+                      {project.techStack.slice(0, 3).map((tech) => (
+                        <span key={tech} className="text-[9px] font-semibold theme-text-muted bg-[#0c0c11] border theme-border px-2 py-0.5 rounded-full">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    {/* Trigger case study */}
+                    <button
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setActiveModalTab('overview');
+                      }}
+                      className="flex items-center gap-1 text-[10px] font-bold font-mono uppercase tracking-wider theme-accent-text hover:theme-text transition-colors cursor-pointer select-none"
                     >
-                      {/* Left: Code Block Syntax */}
-                      <div className="lg:col-span-8 bg-[#09090d] border theme-border rounded-xl p-4 font-mono text-xs overflow-x-auto relative group">
-                        
-                        {/* Copy button */}
-                        <button
-                          onClick={handleCopyClone}
-                          className="absolute right-3 top-3 p-2 bg-[#0c0c11] border theme-border rounded-lg theme-text-muted hover:theme-text transition-colors cursor-pointer"
-                          title="Copy Git Clone Command"
-                        >
-                          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-                        </button>
+                      Case Study <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
 
-                        <div className="flex gap-4">
-                          {/* Line numbers */}
-                          <div className="text-[var(--text-muted)] select-none text-right border-r theme-border pr-3 flex flex-col gap-1 min-w-[24px]">
-                            {Array.from({ length: 18 }).map((_, i) => (
-                              <span key={i}>{i + 1}</span>
+        {/* ── Detailed Case Study Modal ── */}
+        <AnimatePresence>
+          {selectedProject && (
+            <div className="fixed inset-0 z-50 bg-[#050508]/85 backdrop-blur-md flex items-center justify-center p-4">
+              
+              {/* Overlay click to close */}
+              <div 
+                className="absolute inset-0 cursor-pointer" 
+                onClick={() => setSelectedProject(null)} 
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                transition={{ duration: 0.3 }}
+                className="relative w-full max-w-3xl rounded-2xl border theme-border bg-[#0b0b0f]/95 overflow-hidden flex flex-col max-h-[85vh] shadow-2xl z-10 font-sans"
+              >
+                
+                {/* Modal Title Header */}
+                <div className="p-6 bg-[#08080c] border-b theme-border flex items-start justify-between gap-4 flex-shrink-0">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 select-none">
+                      <span className="text-[10px] uppercase font-black font-mono bg-[var(--accent-primary)]/10 theme-accent-text px-2 py-0.5 rounded border border-[var(--accent-primary)]/20">
+                        {selectedProject.category}
+                      </span>
+                      {selectedProject.featured && (
+                        <span className="text-[10px] font-bold text-yellow-500 flex items-center gap-1 select-none">
+                          <Sparkles size={10} className="fill-current" /> Featured Case Study
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black theme-text leading-tight">
+                      {selectedProject.title}
+                    </h3>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedProject(null)}
+                    className="p-1.5 rounded-lg bg-[#14141c] hover:bg-white/5 border theme-border theme-text-muted hover:theme-text transition-colors cursor-pointer"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Tab select bar */}
+                <div className="h-10 bg-[#08080c] border-b theme-border flex items-center px-4 gap-1 select-none flex-shrink-0 overflow-x-auto no-scrollbar">
+                  <button
+                    onClick={() => setActiveModalTab('overview')}
+                    className={`px-4 h-full text-xs font-mono font-bold uppercase tracking-wider relative flex items-center gap-1.5 transition-all cursor-pointer ${
+                      activeModalTab === 'overview' ? 'theme-accent-text border-b-2 border-[var(--accent-primary)]' : 'theme-text-muted hover:theme-text'
+                    }`}
+                  >
+                    <Info size={13} />
+                    Overview
+                  </button>
+                  <button
+                    onClick={() => setActiveModalTab('features')}
+                    className={`px-4 h-full text-xs font-mono font-bold uppercase tracking-wider relative flex items-center gap-1.5 transition-all cursor-pointer ${
+                      activeModalTab === 'features' ? 'theme-accent-text border-b-2 border-[var(--accent-primary)]' : 'theme-text-muted hover:theme-text'
+                    }`}
+                  >
+                    <Cpu size={13} />
+                    Specifications
+                  </button>
+                  <button
+                    onClick={() => setActiveModalTab('code')}
+                    className={`px-4 h-full text-xs font-mono font-bold uppercase tracking-wider relative flex items-center gap-1.5 transition-all cursor-pointer ${
+                      activeModalTab === 'code' ? 'theme-accent-text border-b-2 border-[var(--accent-primary)]' : 'theme-text-muted hover:theme-text'
+                    }`}
+                  >
+                    <Code size={13} />
+                    Deployment
+                  </button>
+                </div>
+
+                {/* Scrollable Modal Content Body */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
+                  <AnimatePresence mode="wait">
+                    
+                    {activeModalTab === 'overview' && (
+                      <motion.div
+                        key="overview"
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                      >
+                        <div className="space-y-2">
+                          <h4 className="text-xs uppercase font-mono font-bold tracking-widest theme-text-muted">
+                            Detailed Description
+                          </h4>
+                          <p className="text-sm theme-text-secondary leading-relaxed">
+                            {selectedProject.longDescription}
+                          </p>
+                        </div>
+
+                        {/* Detail Info Grid cards */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 select-none pt-2">
+                          <div className="bg-[#0e0e13] border theme-border rounded-xl p-3">
+                            <span className="text-[9px] uppercase font-mono theme-text-muted">Status</span>
+                            <span className="block text-xs font-black text-green-400 mt-0.5">Production</span>
+                          </div>
+                          <div className="bg-[#0e0e13] border theme-border rounded-xl p-3">
+                            <span className="text-[9px] uppercase font-mono theme-text-muted">Diagnostic</span>
+                            <span className="block text-xs font-black text-[var(--accent-primary)] mt-0.5">Passing</span>
+                          </div>
+                          <div className="bg-[#0e0e13] border theme-border rounded-xl p-3">
+                            <span className="text-[9px] uppercase font-mono theme-text-muted">Core Language</span>
+                            <span className="block text-xs font-black text-[#a78bfa] mt-0.5">
+                              {selectedProject.techStack[0]}
+                            </span>
+                          </div>
+                          <div className="bg-[#0e0e13] border theme-border rounded-xl p-3">
+                            <span className="text-[9px] uppercase font-mono theme-text-muted">Priority</span>
+                            <span className="block text-xs font-black text-[var(--accent-secondary)] mt-0.5">
+                              0{selectedProject.priority} / 10
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {activeModalTab === 'features' && (
+                      <motion.div
+                        key="features"
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                      >
+                        <div className="space-y-3">
+                          <h4 className="text-xs uppercase font-mono font-bold tracking-widest theme-text-muted">
+                            Architectural Technologies
+                          </h4>
+                          <div className="flex flex-wrap gap-2 select-none">
+                            {selectedProject.techStack.map((tech) => (
+                              <span key={tech} className="text-[10px] font-bold theme-text-secondary bg-[#0e0e13] border theme-border px-3 py-1 rounded-lg">
+                                {tech}
+                              </span>
                             ))}
                           </div>
-
-                          {/* Colored JSON Editor Syntax */}
-                          <div className="flex-1 space-y-1 text-[#a0a0b8]">
-                            <div>
-                              <span className="text-[#ff2d95]">import</span> {'{'} Project {'}'} <span className="text-[#ff2d95]">from</span> <span className="text-[#00f0ff]">&apos;@/types/project&apos;</span>;
-                            </div>
-                            <div className="h-2" />
-                            <div>
-                              <span className="text-[#b026ff]">const</span> <span className="text-[var(--text-primary)] font-semibold">config</span>: Project = {'{'}
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;id&apos;</span>: <span className="text-[#00f0ff]">&apos;{activeProject.id}&apos;</span>,
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;title&apos;</span>: <span className="text-[#00f0ff]">&apos;{activeProject.title}&apos;</span>,
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;category&apos;</span>: <span className="text-[#00f0ff]">&apos;{activeProject.category}&apos;</span>,
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;featured&apos;</span>: <span className="text-[#ff2d95]">{activeProject.featured ? 'true' : 'false'}</span>,
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;description&apos;</span>: <span className="text-[#00f0ff]">&apos;{activeProject.description}&apos;</span>,
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;techStack&apos;</span>: [
-                              <div className="pl-4 flex flex-wrap gap-x-2">
-                                {activeProject.techStack.map((tech, i) => (
-                                  <span key={tech} className="text-[#00f0ff]">
-                                    &apos;{tech}&apos;{i < activeProject.techStack.length - 1 ? ',' : ''}
-                                  </span>
-                                ))}
-                              </div>
-                              ],
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#a78bfa]">&apos;longDescription&apos;</span>: <span className="text-[#00f0ff]">&apos;{activeProject.longDescription}&apos;</span>
-                            </div>
-                            <div>{'};'}</div>
-                            <div className="h-2" />
-                            <div>
-                              <span className="text-[#ff2d95]">export default</span> config;
-                            </div>
-                          </div>
                         </div>
-                      </div>
 
-                      {/* Right: Actions and Tech Overview */}
-                      <div className="lg:col-span-4 flex flex-col gap-4">
-                        <div className="theme-card-bg border theme-border rounded-xl p-5">
-                          <h4 className="text-sm font-bold font-mono tracking-widest uppercase theme-text-muted mb-4">
-                            Workspace Actions
+                        <div className="space-y-3 pt-2">
+                          <h4 className="text-xs uppercase font-mono font-bold tracking-widest theme-text-muted">
+                            Key Specifications & Operations
+                          </h4>
+                          <ul className="space-y-2.5 font-mono text-xs text-[#a0a0b8]">
+                            <li className="flex items-start gap-2.5">
+                              <Check size={14} className="text-green-500 shrink-0 mt-0.5" />
+                              <span>Custom decoupled framework designed with standard modular principles.</span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <Check size={14} className="text-green-500 shrink-0 mt-0.5" />
+                              <span>Rigorous database schema mapping optimized for relational indexing metrics.</span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <Check size={14} className="text-green-500 shrink-0 mt-0.5" />
+                              <span>High performance asynchronous network polling handlers with zero thread blocking.</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {activeModalTab === 'code' && (
+                      <motion.div
+                        key="code"
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                      >
+                        <div className="space-y-3">
+                          <h4 className="text-xs uppercase font-mono font-bold tracking-widest theme-text-muted">
+                            Manual Project Setup
                           </h4>
                           
-                          <div className="space-y-3">
-                            <a 
-                              href={activeProject.githubUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border theme-border bg-[#0c0c11] hover:bg-white/5 transition-colors font-mono text-xs font-bold theme-text cursor-pointer"
+                          {/* Git Clone Box */}
+                          <div className="bg-[#050508] border theme-border rounded-xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 font-mono text-xs text-white">
+                            <div className="overflow-hidden truncate select-all text-[#a0a0b8] pr-2">
+                              git clone {selectedProject.githubUrl}
+                            </div>
+                            <button
+                              onClick={() => handleCopyClone(selectedProject.githubUrl)}
+                              className="px-4 py-2 bg-[#0c0c11] border theme-border rounded-lg theme-text-secondary hover:theme-text font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
                             >
-                              <Github size={15} />
-                              Open Source Repo
-                            </a>
-
-                            {activeProject.liveUrl ? (
-                              <a 
-                                href={activeProject.liveUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] transition-all font-mono text-xs font-bold text-white shadow-md shadow-[var(--accent-primary)]/10 hover:shadow-lg cursor-pointer"
-                              >
-                                <Play size={14} className="fill-current" />
-                                Launch Live Preview
-                              </a>
-                            ) : (
-                              <div className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed theme-border font-mono text-xs font-semibold theme-text-muted">
-                                Live link not deployed
-                              </div>
-                            )}
+                              {copied ? (
+                                <>
+                                  <Check size={14} className="text-green-500" /> Copied!
+                                </>
+                              ) : (
+                                <>
+                                  <Terminal size={14} /> Copy Clone
+                                </>
+                              )}
+                            </button>
                           </div>
                         </div>
 
-                        {/* Git clone box */}
-                        <div className="theme-card-bg border theme-border rounded-xl p-5">
-                          <h4 className="text-xs font-bold font-mono tracking-wider uppercase theme-text-muted mb-2">
-                            Quick Clone Cmd
-                          </h4>
-                          <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-[#07070a] border theme-border font-mono text-[10px] theme-text-secondary select-all overflow-hidden truncate">
-                            <span>git clone {activeProject.githubUrl}</span>
-                          </div>
+                        {/* Simulated config block */}
+                        <div className="space-y-2 pt-2">
+                          <span className="text-[10px] font-bold font-mono theme-text-muted flex items-center gap-1.5 select-none">
+                            <Info size={12} className="text-[var(--accent-primary)]" />
+                            Environment Configuration (.env.example)
+                          </span>
+                          <pre className="bg-[#050508] border theme-border rounded-xl p-4 font-mono text-[10px] text-[#00f0ff] overflow-x-auto leading-relaxed select-all">
+                            {`# Environment setup for ${selectedProject.id}
+PORT=8080
+DATABASE_URL=postgresql://localhost:5432/${selectedProject.id}_db
+API_KEY=your_secured_mcp_authentication_token_here`}
+                          </pre>
                         </div>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    // Live UI Device Mockup Rendering
-                    <motion.div
-                      key="preview"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="w-full flex justify-center py-4"
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Modal Actions Footer */}
+                <div className="p-6 bg-[#08080c] border-t theme-border flex flex-col sm:flex-row gap-3 flex-shrink-0 select-none">
+                  <a
+                    href={selectedProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border theme-border bg-[#0c0c11] hover:bg-white/5 transition-colors font-mono text-xs font-bold theme-text cursor-pointer"
+                  >
+                    <Github size={15} />
+                    Inspect Repository
+                  </a>
+
+                  {selectedProject.liveUrl ? (
+                    <a
+                      href={selectedProject.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)] transition-all font-mono text-xs font-bold text-white shadow-md shadow-[var(--accent-primary)]/10 hover:shadow-lg cursor-pointer"
                     >
-                      {/* Browser Window frame mockup */}
-                      <div className="w-full max-w-2xl rounded-xl border theme-border bg-[#0c0c11] overflow-hidden shadow-lg flex flex-col aspect-[16/10]">
-                        {/* Browser Header */}
-                        <div className="h-8 bg-[#09090d] border-b theme-border flex items-center px-4 gap-2 flex-shrink-0">
-                          <div className="flex gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                          </div>
-                          <div className="mx-auto w-3/5 h-4.5 rounded bg-[#07070a] border theme-border text-[9px] font-mono theme-text-muted flex items-center justify-center truncate">
-                            {activeProject.liveUrl || `https://${activeProject.id}.local`}
-                          </div>
-                        </div>
-
-                        {/* Dynamic Mockup Body based on Category */}
-                        <div className="flex-1 bg-[#07070a] p-4 flex flex-col overflow-hidden relative">
-                          <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent-primary)]/5 via-transparent to-transparent pointer-events-none" />
-
-                          {activeProject.category === 'AI/ML' && (
-                            <div className="flex-1 flex flex-col font-mono text-xs overflow-hidden gap-3">
-                              {/* Custom AI Chat simulator */}
-                              <div className="flex-shrink-0 text-[#ff2d95] font-semibold border-b theme-border pb-1">
-                                [AI AGENT CONSOLE]
-                              </div>
-                              <div className="flex-1 flex flex-col gap-2 overflow-y-auto scrollbar-none pr-1">
-                                <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 self-end max-w-[85%] text-[10px] theme-text-secondary">
-                                  Run diagnostic on project extraction pipeline.
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-[var(--accent-primary)]/10 border border-[var(--accent-primary)]/20 self-start max-w-[85%] text-[10px] theme-accent-text flex flex-col gap-1">
-                                  <span className="font-bold">[System Answer]</span>
-                                  <span>Inference loaded. Executed {activeProject.title} matching algorithm. 7/7 local models active.</span>
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 self-end max-w-[85%] text-[10px] theme-text-secondary">
-                                  Show extracted fields metadata.
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-[var(--accent-secondary)]/10 border border-[var(--accent-secondary)]/25 self-start max-w-[85%] text-[10px] text-[var(--accent-secondary)] font-bold animate-pulse">
-                                  Generating structured data logs...
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {activeProject.category === 'Full-Stack' && (
-                            <div className="flex-1 flex flex-col gap-3">
-                              {/* Custom Dashboard Admin simulator */}
-                              <div className="flex items-center justify-between border-b theme-border pb-1.5 flex-shrink-0">
-                                <span className="text-xs font-bold theme-text uppercase tracking-wide">Dashboard Console</span>
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                              </div>
-                              <div className="grid grid-cols-3 gap-2.5 flex-shrink-0">
-                                <div className="p-2.5 rounded-xl bg-white/5 border theme-border text-center">
-                                  <div className="text-[10px] theme-text-muted font-mono uppercase">Vouchers</div>
-                                  <div className="text-base font-black text-[var(--accent-primary)] mt-0.5">840</div>
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-white/5 border theme-border text-center">
-                                  <div className="text-[10px] theme-text-muted font-mono uppercase">API Load</div>
-                                  <div className="text-base font-black text-[#a78bfa] mt-0.5">14%</div>
-                                </div>
-                                <div className="p-2.5 rounded-xl bg-white/5 border theme-border text-center">
-                                  <div className="text-[10px] theme-text-muted font-mono uppercase">Threads</div>
-                                  <div className="text-base font-black text-[var(--accent-secondary)] mt-0.5">1,200</div>
-                                </div>
-                              </div>
-                              {/* Dummy Chart Mockup */}
-                              <div className="flex-1 bg-white/5 rounded-xl border theme-border flex items-end p-2 gap-1.5 overflow-hidden">
-                                <div className="w-full h-[30%] bg-gradient-to-t from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-t-sm" />
-                                <div className="w-full h-[50%] bg-gradient-to-t from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-t-sm animate-pulse" />
-                                <div className="w-full h-[40%] bg-gradient-to-t from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-t-sm" />
-                                <div className="w-full h-[75%] bg-gradient-to-t from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-t-sm" />
-                                <div className="w-full h-[60%] bg-gradient-to-t from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-t-sm" />
-                                <div className="w-full h-[90%] bg-gradient-to-t from-[var(--accent-primary)] to-[var(--accent-secondary)] rounded-t-sm" />
-                              </div>
-                            </div>
-                          )}
-
-                          {activeProject.category !== 'AI/ML' && activeProject.category !== 'Full-Stack' && (
-                            <div className="flex-1 flex flex-col justify-center items-center gap-4 text-center">
-                              {/* Abstract general mockup view */}
-                              <div className="relative w-20 h-20 flex items-center justify-center">
-                                <div className="absolute inset-0 rounded-full border border-dashed border-[var(--accent-primary)] animate-[border-dance_12s_linear_infinite]" />
-                                <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[var(--accent-primary)] to-[var(--accent-secondary)] opacity-10 animate-pulse" />
-                                <span className="text-4xl relative z-10">{activeProject.icon}</span>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-bold theme-text">{activeProject.title}</h4>
-                                <p className="text-[10px] theme-text-muted mt-1 font-mono max-w-sm">
-                                  PROGRAMMATIC FILE ACCESS ONLY · RUN DIAGNOSTIC LOGS BELOW FOR BUILD DETAILS
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
+                      <ExternalLink size={14} />
+                      Launch Application
+                    </a>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed theme-border font-mono text-xs font-semibold theme-text-muted">
+                      No Live Preview Deployed
+                    </div>
                   )}
-                </AnimatePresence>
-              </div>
-
-              {/* 5. Bottom Terminal Panel */}
-              <div className="h-40 bg-[#050508] border-t theme-border flex flex-col overflow-hidden font-mono text-[11px] flex-shrink-0">
-                {/* Terminal Header */}
-                <div className="h-8 bg-[#0a0a0f] border-b theme-border flex items-center px-4 gap-2 justify-between flex-shrink-0 select-none">
-                  <div className="flex items-center gap-2 theme-text-secondary">
-                    <TerminalIcon size={13} className="text-green-500" />
-                    <span className="font-bold">Terminal</span>
-                  </div>
-                  <div className="text-[9px] theme-text-muted">
-                    bash · active-job
-                  </div>
                 </div>
 
-                {/* Terminal Output Logs */}
-                <div className="flex-1 p-3.5 overflow-y-auto space-y-1 scrollbar-none text-[#a0a0b8]">
-                  {terminalLines.map((line, i) => {
-                    if (!line) return null;
-                    const isCommand = line.startsWith('$');
-                    const isError = line.toLowerCase().includes('error');
-                    const isSuccess = line.toLowerCase().includes('success') || line.toLowerCase().includes('online') || line.toLowerCase().includes('active');
-                    
-                    let textColor = 'text-[#a0a0b8]';
-                    if (isCommand) textColor = 'text-[var(--accent-primary)] font-bold';
-                    else if (isError) textColor = 'text-red-500';
-                    else if (isSuccess) textColor = 'text-green-400 font-semibold';
-
-                    return (
-                      <div key={i} className={`${textColor} leading-normal`}>
-                        {line}
-                      </div>
-                    );
-                  })}
-                  <div ref={terminalBottomRef} />
-                </div>
-              </div>
-
+              </motion.div>
             </div>
-          </div>
-        </div>
+          )}
+        </AnimatePresence>
+
       </div>
     </section>
   );
