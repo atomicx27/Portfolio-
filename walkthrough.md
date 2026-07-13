@@ -53,13 +53,14 @@ We have successfully completed all upgrades, enhancements, and custom decisions 
 - Renders animated progress fill bars using Framer Motion `whileInView` properties, sliding from 0 to target values.
 - Replaced custom JS hover logic with pure CSS styles.
 
-### 8. Interactive IDE Projects Workspace (`ProjectsSection.tsx`)
-- **Upgraded from simple list to a full interactive VS Code-style workspace**:
-  - **Activity Bar**: Navigation strip indicating files explorer view.
-  - **File Explorer**: Sidebar containing folders for each category (AI/ML, Full-Stack, Tools, Experiments). Project items are rendered as code files (e.g. `brenda.tsx`, `logiquote.py`).
-  - **Tabs Bar**: Switch between raw configuration codes (JSON syntax highlighted mock syntax) and visual mockup frames.
-  - **Diagnostic Build Terminal**: Simulated system boot console showing compilation and backend diagnostic logs whenever you open or switch projects.
-  - **Live Device Previews**: Renders glassmorphic UI browser frames showing simulated app interactions (AI message logs, admin charts, and console nodes) depending on category.
+### 8. Visual Card Gallery & Case Studies (`ProjectsSection.tsx`)
+- **Category Filter Bar**: Center-aligned filter pills (All, AI/ML, Full-Stack, Tools, Experiments) that filter cards with smooth layout animations.
+- **Interactive Project Cards**: Each card displays a dedicated glassmorphic mockup frame representing the project's app UI (e.g. freelance dashboard for Brenda, JSON email parser for LogiQuote, metric graphs for Open BI, mobile device view for Atash).
+- **Tabbed Case-Study Modals**: Popups showing:
+  - **Overview**: Long description and grid metrics (Status, Diagnostic status, Priority).
+  - **Specifications**: Core tech stack layout and detailed checklist of technical operations.
+  - **Deployment**: Copyable git clone command, active setup instructions, and action buttons for GitHub and Live Previews.
+  - **Scroll Lock**: Suspends main page scrolling while the case study modal is active.
 
 ### 9. Markdown Blog Reader (`BlogSection.tsx`)
 - Upgraded the blog modal with custom Regex markdown parsers:
